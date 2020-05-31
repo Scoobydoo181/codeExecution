@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Code Execution</title>
+
+        <style>
+            #buttons {
+                display:block;
+                float: right;
+            }
+
+            form {
+                width: 100%;
+            }
+
+            
+            form textarea {
+                width: 100%;
+                min-height: 450px;
+                background-color: rgb(15, 92, 163);
+                color: rgb(241, 241, 237);
+                padding: 30px;
+                font-size: 1.5em;
+                font-family: monospace;
+            }
+
+            #output {
+                width: 100%;
+                min-height: 400px;
+                background-color: rgb(10, 56, 117);
+                color: aliceblue;
+                padding: 30px;
+                font-size: 1.5em;
+                margin-top: 20px;
+                font-family: monospace;
+            }
+
+            * {
+                white-space: pre-wrap;
+            }
+
+        </style>
+
+    </head>
+    <body>
+        <h1>Enter your Code</h1>
+
+        <form id="form">
+            <textarea name="code" id="code" required="true"></textarea>
+            <div id="buttons">
+                <select name="ext" id="ext" required="true">
+                    <option value=".py">Python</option>
+                    <option value=".java">Java</option>
+                    <!-- <option value=".c">C</option> -->
+                    <!-- <option value=".cpp">C++</option> -->
+                    <option value=".js">JavaScript</option>
+                </select>
+                <input type="submit" value="Run">
+            </div>
+        </form>
+
+        <section id="output">
+
+        </section>
+
+        <script>
+        /*
+        Event handlers can work in two ways in JS
+        1. an "onsubmit" property is inlined. In this case, whatever JS you inline becomes wrapped in a function with a paramater called "event"
+        2. you use ".addEventListener" to bypass the function wrapping by passing your own function with a paramater for the event
+
+        The event handler needs no paramaters if inlined, and it needs a paramater for the event if it's added with addEventListener
+        */
+            const handleSubmit =  (event) => {
+                event.preventDefault()
+                fetch('/runcode', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({code: event.target.code.value, ext: event.target.ext.value}) 
+                })
+                .then( res => res.json() )
+                .then( data => {
+                    console.log(data)
+                    document.getElementById('output').textContent = data.output 
+                })
+            }
+            document.getElementById('form').addEventListener('submit',handleSubmit)
+        </script>
+
+    </body>
+</html>
